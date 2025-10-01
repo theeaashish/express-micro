@@ -5,7 +5,15 @@ import type fileUpload from "express-fileupload";
 import { generateRandomNum, imageValidator } from "../utils/helper.ts";
 import { prisma } from "../config/db.config.ts";
 class NewsController {
-  static async index(req: Request, res: Response) {}
+  static async index(_req: Request, res: Response) {
+    try {
+      const news = await prisma.news.findMany();
+
+      return res.json({ status: 200, data: news });
+    } catch (error) {
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  }
 
   static async store(req: Request, res: Response) {
     try {

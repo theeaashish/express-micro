@@ -4,12 +4,26 @@ import vine, { errors } from "@vinejs/vine";
 import type fileUpload from "express-fileupload";
 import { generateRandomNum, imageValidator } from "../utils/helper.ts";
 import { prisma } from "../config/db.config.ts";
+import NewsApiTransform from "../transform/newsApiTransform.ts";
 class NewsController {
   static async index(_req: Request, res: Response) {
     try {
-      const news = await prisma.news.findMany();
+      const news = await prisma.news.findMany({
+        include: {
+          Users: {
+            select: {
+              id: true,
+              name: true,
+              profile: true,
+            },
+          },
+        },
+      });
+      const newsTransformed = news?.map((news) =>
+        NewsApiTransform.transform(news)
+      );
 
-      return res.json({ status: 200, data: news });
+      return res.json({ status: 200, data: newsTransformed });
     } catch (error) {
       return res.status(500).json({ message: "Something went wrong" });
     }

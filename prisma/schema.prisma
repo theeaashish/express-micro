@@ -22,4 +22,16 @@ model Users {
   profile   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  news      News[]
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  content   String
+  image     String   @db.VarChar(100)
+  Users     Users?   @relation(fields: [usersId], references: [id])
+  usersId   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
